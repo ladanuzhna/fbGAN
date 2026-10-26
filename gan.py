@@ -9,8 +9,15 @@ from globals import *
 
 class GAN():
 
-    def __init__(self, batch_size=BATCH_SIZE, discriminator_steps=0, lr=0.0002,
-                 gradient_penalty_weight=5, generator_weights_path=None, discriminator_weights_path=None):
+    def __init__(
+        self,
+        batch_size=BATCH_SIZE,
+        discriminator_steps=0,
+        lr=0.0002,
+        gradient_penalty_weight=5,
+        generator_weights_path=None,
+        discriminator_weights_path=None
+    ):
         self.batch_size = batch_size
         self.G = Generator()
         self.D = Discriminator()
@@ -55,7 +62,7 @@ class GAN():
 
     # @tf.function
     def gradient_penalty(self, real_samples, fake_samples):
-        alpha = tf.random.normal([self.batch_size, 1, 1], 0.0, 1.0)
+        alpha = tf.random.uniform([tf.shape(real_samples)[0], 1, 1], 0.0, 1.0)
         real_samples = tf.cast(real_samples, tf.float32)
         diff = fake_samples - real_samples
         interpolated = real_samples + alpha * diff
@@ -66,7 +73,7 @@ class GAN():
 
         grads = gp_tape.gradient(pred, [interpolated])[0]
         norm = tf.sqrt(tf.reduce_sum(tf.square(grads), axis=[1, 2]))
-        gp = tf.reduce_mean((norm - 1.0) ** 2)
+        gp = tf.reduce_mean((norm - 1.0)**2)
 
         return gp
 
@@ -85,7 +92,7 @@ class GAN():
     # @tf.function
     def D_train_step(self, real_samples):
         with tf.GradientTape() as tape:
-            fake_samples = self.generate_samples()
+            fake_samples = self.generate_samples(number=tf.shape(real_samples)[0])
             real_score = self.D(real_samples, training=True)
             fake_score = self.D(fake_samples, training=True)
 
@@ -133,7 +140,8 @@ class GAN():
                     self.history['gradient_penalty'].append(GP.numpy())
                     self.history['sequences'].append(example_sequence)
                     print(
-                        f'\t Step {step}/{n_steps} \t Generator: {G_loss.numpy()} \t Discriminator: {D_loss.numpy()} \t Sequence: {example_sequence}')
+                        f'\t Step {step}/{n_steps} \t Generator: {G_loss.numpy()} \t Discriminator: {D_loss.numpy()} \t Sequence: {example_sequence}'
+                    )
                 step += 1
 
     def get_highest_scoring(self, num_to_generate=BATCH_SIZE, num_to_return=1, decoded=True):
