@@ -1,6 +1,6 @@
 # fbGAN
 
-A feedback-guided generative adversarial network for DNA sequences, built as a CS496 course project. A Wasserstein GAN generates DNA, and a recurrent feedback network scores the translated proteins for the presence of secondary-structure classes. Generated samples that pass the selected score thresholds join the GAN training set.
+A feedback-guided generative adversarial network for DNA sequences. A Wasserstein GAN generates DNA, and a recurrent feedback network scores the translated proteins for the presence of secondary-structure classes. Generated samples that pass the selected score thresholds join the GAN training set.
 
 The feedback model predicts which structure classes occur anywhere in a protein. Its eight scores are sequence-level labels; they do not assign a structure to each residue.
 
